@@ -1,5 +1,22 @@
 # GCP Terraform Subnet IAM Attach
-Terraform to share subnets to projects ans assigning the `roles/NetworkUser` role to default Service Accounts within the Service Project based on the enabled Cloud APIs and specific member types that are documented below. If one or more Cloud APIs is enabled/disabled, you can re-run terraform apply and this module will make the appropriate changes to IAM.
+Terraform to share assign the `roles/NetworkUser` role to the default Service Accounts within the Service Project based on the enabled Cloud APIs. If one or more Cloud APIs is enabled/disabled, you can re-run terraform apply and this module will make the appropriate changes to IAM. 
+
+Optionally, you can set `var.additional_iam_members` to assign `roles/NetworkUser` role to additional members. The supported member types are detailed below.
+
+## Example
+
+Assign `roles/NetworkUser` role to default and 
+```
+module "subnet_iam_attach" {
+  source  = "lancyqusa/subnet-iam-attach/google"
+  version = "1.0.0"
+  host_project_id        = "host-prj"
+  service_project_id     = "service-prj"
+  region                 = "us-central1"
+  subnet                 = "subnet-01"
+  additional_iam_members = each.value.members # ["serviceAccount:terraform-sa-account@service-prj.iam.gserviceaccount.com", "user:john.doe@example.com"]
+}
+```
 
 ## Service Project Management
 Shared VPC connects projects within the same organization. Participating host and service projects cannot belong to different organizations. Linked projects can be in the same or different folders, but if they are in different folders the admin must have Shared VPC Admin rights to both folders. Refer to the Google Cloud resource hierarchy for more information about organizations, folders, and projects.
@@ -43,20 +60,20 @@ All products listed below should be supported by this terraform module and autom
 - Cloud Workstations: (Not Documented yet)
   - https://cloud.google.com/workstations/docs/architecture
 
-# Supported User Types
-  Identities that will be granted the privilege in role. Each entry can have one of the following values:
+# Supported Member Types for `var.additional_iam_members`
+Identities that will be granted the privilege in role. Each entry can have one of the following values:
 
-  allUsers: A special identifier that represents anyone who is on the internet; with or without a Google account.
-  allAuthenticatedUsers: A special identifier that represents anyone who is authenticated with a Google account or a service account.
-  user:{emailid}: An email address that represents a specific Google account. For example, alice@gmail.com or joe@example.com.
-  serviceAccount:{emailid}: An email address that represents a service account. For example, my-other-app@appspot.gserviceaccount.com.
-  group:{emailid}: An email address that represents a Google group. For example, admins@example.com.
-  domain:{domain}: A G Suite domain (primary, instead of alias) name that represents all the users of that domain. For example, google.com or example.com.
-  projectOwner:projectid: Owners of the given project. For example, "projectOwner:my-example-project"
-  projectEditor:projectid: Editors of the given project. For example, "projectEditor:my-example-project"
-  projectViewer:projectid: Viewers of the given project. For example, "projectViewer:my-example-project"
+- allUsers: A special identifier that represents anyone who is on the internet; with or without a Google account.
+- allAuthenticatedUsers: A special identifier that represents anyone who is authenticated with a Google account or a service account.
+- user:{emailid}: An email address that represents a specific Google account. For example, alice@gmail.com or joe@example.com.
+- serviceAccount:{emailid}: An email address that represents a service account. For example, my-other-app@appspot.gserviceaccount.com.
+- group:{emailid}: An email address that represents a Google group. For example, admins@example.com.
+- domain:{domain}: A G Suite domain (primary, instead of alias) name that represents all the users of that domain. For example, google.com or example.com.
+- projectOwner:projectid: Owners of the given project. For example, "projectOwner:my-example-project"
+- projectEditor:projectid: Editors of the given project. For example, "projectEditor:my-example-project"
+- projectViewer:projectid: Viewers of the given project. For example, "projectViewer:my-example-project"
 
-  ## Inputs
+## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
