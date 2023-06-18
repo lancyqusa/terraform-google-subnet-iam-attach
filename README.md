@@ -5,7 +5,8 @@ Optionally, you can set `var.additional_iam_members` to assign `roles/NetworkUse
 
 ## Example
 
-Assign `roles/NetworkUser` role to default and 
+Assign `roles/NetworkUser` role to default Google service account in the service project and additionally, assign the `roles/NetworkUser` to the Terraform service account and user - John.Doe@example.com. 
+
 ```
 module "subnet_iam_attach" {
   source  = "lancyqusa/subnet-iam-attach/google"
